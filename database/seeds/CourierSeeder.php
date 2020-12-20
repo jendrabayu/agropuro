@@ -12,12 +12,15 @@ class CourierSeeder extends Seeder
      */
     public function run()
     {
-        Courier::insert(
+        $couriers =
             [
                 ['code' => 'jne', 'name' => 'JNE'],
                 ['code' => 'tiki', 'name' => 'TIKI'],
                 ['code' => 'pos', 'name' => 'POS Indonesia'],
-            ]
-        );
+            ];
+
+        foreach ($couriers as $item) {
+            Courier::create($item);
+        }
     }
 }

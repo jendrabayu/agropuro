@@ -26,10 +26,10 @@ class ForumCategorySeeder extends Seeder
             'Traktor'
         ];
 
-        foreach ($categories as $name) {
+        foreach ($categories as $item) {
             ForumCategory::create([
-                'name' => $name,
-                'slug' => Str::slug($name)
+                'name' => $item,
+                'slug' => Str::slug($item)
             ]);
         }
     }

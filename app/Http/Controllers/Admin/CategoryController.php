@@ -42,7 +42,7 @@ class CategoryController extends Controller
             $image = 'images/category/dummy.jpg';
         }
 
-        $validated['slug'] = Str::slug($request->name) . '-' . uniqid();
+        $validated['slug'] = Str::slug($request->name);
         $validated['image'] = $image;
 
         $category = $category->create($validated);
@@ -63,7 +63,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $this->validate($request, [
-            'name' => ['min:3', 'required', 'max:30', 'string', 'unique:categories,name,' . $category->id],
+            'name' => ['min:3', 'required', 'max:50', 'string', 'unique:categories,name,' . $category->id],
             'image' => ['nullable', 'max:1000', 'mimes:jpg,png,jpeg']
         ]);
 
@@ -73,7 +73,7 @@ class CategoryController extends Controller
             $image = $category->image;
         }
 
-        $validated['slug'] = Str::slug($request->name) . '-' . uniqid();
+        $validated['slug'] = Str::slug($request->name);
         $validated['image'] = $image;
         $category->update($validated);
 

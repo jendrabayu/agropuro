@@ -21,10 +21,10 @@ class CategorySeeder extends Seeder
             'Pupuk Kimia Cair'
         ];
 
-        foreach ($categories as $name) {
+        foreach ($categories as $item) {
             Category::create([
-                'name' => $name,
-                'slug' => Str::slug($name),
+                'name' => $item,
+                'slug' => Str::slug($item),
                 'image' => 'images/category/dummy.jpg'
             ]);
         }

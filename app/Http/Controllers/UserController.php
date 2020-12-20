@@ -30,10 +30,10 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $data = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users,email,' . auth()->id(),
-            'password' => 'nullable|min:5|confirmed',
-            'photo' => 'nullable|max:1000|image'
+            'name' => ['required', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email,' . auth()->id()],
+            'password' => ['nullable', 'min:5', 'confirmed'],
+            'photo' => ['nullable', 'max:1000', 'image']
         ]);
 
         unset($data['password']);

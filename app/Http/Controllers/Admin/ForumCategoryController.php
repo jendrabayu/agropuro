@@ -27,7 +27,7 @@ class ForumCategoryController extends Controller
     public function store(Request $request)
     {
         $validated =  $this->validate($request, ['name' => ['required', 'unique:forum_categories', 'max:50']]);
-        $validated['slug'] = Str::slug($request->name) . '-' . uniqid();
+        $validated['slug'] = Str::slug($request->name);
 
         ForumCategory::create($validated);
         return response()->json([
@@ -46,7 +46,7 @@ class ForumCategoryController extends Controller
         $forumCategory = ForumCategory::query()->findOrFail($id);
 
         $validated = $this->validate($request, ['name' => ['required', 'unique:forum_categories,name,' . $forumCategory->id, 'max:30']]);
-        $validated['slug'] = Str::slug($request->name) . '-' . uniqid();
+        $validated['slug'] = Str::slug($request->name);
 
         $forumCategory->update($validated);
         return response()->json([

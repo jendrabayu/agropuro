@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Forum;
 use App\ForumCategory;
-use App\ForumComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
