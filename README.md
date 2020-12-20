@@ -1,7 +1,7 @@
 ## Installation *need internet connection
 - open your terminal
 - run "composer install" 
-- create .env file (copy from .env.axample)
+- create .env file (copy from .env.example)
 - set database config in .env
 - set mailtrap username & password in .env
 - run "php artisan key:generate" 
