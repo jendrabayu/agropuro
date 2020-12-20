@@ -1,0 +1,15 @@
+{
+    "/assets/front/js/app.js": "/assets/front/js/app.js",
+    "/assets/stisla/js/app.js": "/assets/stisla/js/app.js",
+    "/js/app.js": "/js/app.js",
+    "/css/app.css": "/css/app.css",
+    "/assets/stisla/css/style.css": "/assets/stisla/css/style.css",
+    "/assets/stisla/css/components.css": "/assets/stisla/css/components.css",
+    "/assets/front/css/style.css": "/assets/front/css/style.css",
+    "/assets/modules/print.js": "/assets/modules/print.js",
+    "/assets/modules/summernote/summernote-bs4.min.css": "/assets/modules/summernote/summernote-bs4.min.css",
+    "/assets/modules/summernote/summernote-bs4.min.js": "/assets/modules/summernote/summernote-bs4.min.js",
+    "/assets/modules/bootstrap-daterangepicker/daterangepicker.css": "/assets/modules/bootstrap-daterangepicker/daterangepicker.css",
+    "/assets/modules/bootstrap-daterangepicker/daterangepicker.js": "/assets/modules/bootstrap-daterangepicker/daterangepicker.js",
+    "/assets/modules/bootstrap-daterangepicker/moment.min.js": "/assets/modules/bootstrap-daterangepicker/moment.min.js"
+}
