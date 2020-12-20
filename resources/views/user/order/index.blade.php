@@ -42,9 +42,9 @@
             <div class="table-responsive">
               <table class="table table-striped w-100 ">
                 <thead>
-                  <tr >
+                  <tr>
                     <th>#</th>
-                    <th>Tanggal</th>
+                    <th>Invoice</th>
                     <th>Produk</th>
                     <th>Total</th>
                     <th>Status</th>
@@ -56,7 +56,7 @@
                   @foreach ($orders as $index => $order)
                     <tr>
                       <th>{{ $index + $orders->firstItem() }}</th>
-                      <th>{{ $order->created_at->isoFormat('D MMM Y') }}</th>
+                      <th>{{ $order->invoice }}</th>
                       <th>
                         @foreach ($order->orderDetails as $item)
                           <div class="d-flex justify-content-between">
@@ -75,7 +75,7 @@
                         {{ Str::upper($order->shipping->code) }}
                       </th>
                       <th class="align-middle">
-                        <a href="{{ route('customer.order.detail', $order->invoice) }}"
+                        <a href="{{ route('customer.order.show', [$order->id, $order->invoice]) }}"
                           class="badge badge-info icon-left">Lihat Rincian
                           <i class="fas fa-search-plus"></i>
                         </a>
@@ -98,9 +98,10 @@
 @endsection
 
 @push('css')
-    <style>
-      tr th {
-        font-weight: normal;
-      }
-    </style>
+  <style>
+    tr th {
+      font-weight: normal;
+    }
+
+  </style>
 @endpush

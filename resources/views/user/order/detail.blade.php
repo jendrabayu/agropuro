@@ -1,7 +1,23 @@
 @extends('layouts.dashboard')
 @section('title', 'Detail Pesanan')
+  @push('css')
+    <style>
+      #table_order_items tr th {
+        font-weight: normal;
+      }
+
+    </style>
+  @endpush
 
 @section('content')
+
+  @php
+  $status = $order->orderStatus;
+  $payment = $order->payment;
+  $payment_bank = $order->payment->bankAccount;
+  $shipping = $order->shipping;
+  $address = $order->shipping->address;
+  @endphp
 
   <div class="section-header">
     <div class="section-header-back">
@@ -21,58 +37,51 @@
       <div class="col-lg-12">
         @include('includes.bs-alert')
         @include('includes.error-alert')
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-lg-12">
         <div class="card">
           <div class="card-body">
-            @php
-            $status = $order->orderStatus->code;
-            @endphp
-
-            <h5 class="text-dark">{{ $order->orderStatus->status_user }}</h5>
-
-            <div class="mb-3">
-              @switch($order->orderStatus->code)
+            <h5 class="text-dark">{{ $status->status_user }}</h5>
+            <div>
+              @switch($status->code)
                 @case('belum-bayar')
-                Menunggu Pembayaran Sebelum {{ $order->created_at->addDays(2)->isoFormat('dddd, D MMMM Y H:mm') }}
+                Menunggu pembayaran sebelum {{ $order->created_at->addDays(2)->isoFormat('dddd, D MMMM Y H:mm') }}
                 @break
                 @case('perlu-dicek')
-                Pembayaran Sedang Dicek
+                Pembayaran sedang dicek
                 @break
                 @case('perlu-dikirim')
-                Pembayaran Berhasil Dikonfirmasi Pada {{ $order->payment->confirmed_at->isoFormat('dddd, D MMMM Y H:mm') }}
-                dan Akan
-                Segera
-                Dikirim
+                Pembayaran berhasil dikonfirmasi Pada {{ $payment->confirmed_at->isoFormat('dddd, D MMMM Y H:mm') }}
                 @break
                 @case('dikirim')
-                Pesanan Dalam Pengiriman
-                {{ Str::upper($order->shipping->code) . " ( {$order->shipping->service} )" }}
-                <span class="font-weight-bold text-dark">NOMOR RESI: {{ $order->shipping->tracking_code }}</span>
+                Pesanan dalam proses pengiriman
                 @break
                 @case('selesai')
-                Pesanan Sudah Diterima
+                Pesanan sudah diterima
                 @break
                 @case('dibatalkan')
-                Alasan Pembatalan: {{ $order->canceled_reason }}
+                Alasan pembatalan: {{ $order->canceled_reason }}
                 @break
                 @default
               @endswitch
             </div>
 
-            @if ($status === 'belum-bayar')
-              <span role="button" id="btn_upload_payment_proof" class="badge badge-primary">Upload Bukti Transfer</span>
-            @endif
+            <div class="btn-group mt-3" role="group" aria-label="Basic example">
+              @if ($status->code === 'belum-bayar')
+                <button type="button" class="btn btn-primary" id="btn_upload_payment_proof">Upload Bukti
+                  Pembayaran</button>
+              @endif
+              @if (!in_array($status->code, ['belum-bayar', 'dibatalkan']))
+                <button type="button" class="btn btn-primary" id="payment_proof">Pembayaran Anda</button>
+              @endif
+              @if (in_array($status->code, ['dikirim', 'selesai']))
+                <button type="button" class="btn btn-primary" id="tracking_code">Resi Pengiriman</button>
+              @endif
+              @if ($status->code === 'dikirim')
+                <a href="{{ route('customer.order.is_done', $order->id) }}" class="btn btn-primary">Konfirmasi Pesanan
+                  Sudah Diterima</a>
+              @endif
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-lg-12">
         <div class="card">
           <div class="card-header">
             <h4></h4>
@@ -101,9 +110,8 @@
                       </div>
                       <div class="col-md-6 text-md-right">
                         <address>
-                          @php $address = $order->shipping->address; @endphp
                           <strong>Dikirim Ke:</strong><br>
-                          {{ $address->name }} ({{ $address->phone_number }}) <br>
+                          {{ "{$address->name} ( {$address->phone_number} )" }}<br>
                           {{ $address->detail }} <br>
                           {{ Str::upper(sprintf('kota/kab %s, kec %s, kel %s, prov %s', $address->city->name, $address->kecamatan, $address->kelurahan, $address->city->province->name)) }}
                         </address>
@@ -112,11 +120,10 @@
                     <div class="row">
                       <div class="col-md-6">
                         <address>
-                          @php $bank = $order->payment->bankAccount @endphp
                           <strong>Pembayaran Ke:</strong><br>
-                          Bank {{ $bank->nama_bank }} <br>
-                          No. Rekening : {{ $bank->no_rekening }} <br>
-                          a.n.{{ $bank->atas_nama }}
+                          Bank {{ $payment_bank->nama_bank }} <br>
+                          No. Rekening: {{ $payment_bank->no_rekening }}<br>
+                          a.n. {{ $payment_bank->atas_nama }}
                         </address>
                       </div>
                       <div class="col-md-6 text-md-right">
@@ -133,66 +140,48 @@
                   <div class="col-md-12">
                     <div class="section-title">Ringkasan Pesanan</div>
                     <div class="table-responsive">
-                      <table class="table table-striped table-hover table-bordered table-md">
-                        <tr>
-                          <th data-width="40">#</th>
-                          <th>Produk</th>
-                          <th class="text-center">Harga Satuan</th>
-                          <th class="text-center">Kuantitas</th>
-                          <th class="text-center">Subtotal</th>
-                        </tr>
-                        @foreach ($order->orderDetails as $key => $value)
+                      <table class="table table-striped table-hover table-bordered" id="table_order_items">
+                        <thead>
                           <tr>
-                            <th>{{ $key + 1 }}</th>
-                            <th>
-                              <div class="row">
-                                <div class="col-lg-2">
-                                  <img class="img-fluid" src="{{ asset('storage/' . $value->product->gambar) }}"
-                                    alt="{{ $value->product->nama }}">
-                                </div>
-                                <div class="col-lg-10">
-                                  {{ $value->product->nama }}
-                                </div>
-                              </div>
-                            </th>
-                            <th class="text-center">
-                              {{ rupiah_format($value->price) }}
-                            </th>
-                            <th class="text-center">
-                              {{ $value->quantity }}
-                            </th>
-                            <th class="text-center">
-                              {{ rupiah_format($value->price * $value->quantity) }}
-                            </th>
+                            <th>Gambar</th>
+                            <th>Produk</th>
+                            <th>Harga Satuan</th>
+                            <th>Kuantitas</th>
+                            <th>Total</th>
                           </tr>
-                        @endforeach
+                        </thead>
+                        <tbody>
+                          @foreach ($order->orderDetails as $index => $item)
+                            <tr>
+                              <th><img class="img-fluid m-2" width="50" src="{{ Storage::url($item->product->gambar) }}">
+                              </th>
+                              <th>{{ $item->product->nama }}</th>
+                              <th>{{ rupiah_format($item->price) }}</th>
+                              <th>{{ $item->quantity }}</th>
+                              <th>{{ rupiah_format($item->price * $item->quantity) }}</th>
+                            </tr>
+                          @endforeach
+                        </tbody>
                       </table>
                     </div>
                     <div class="row mt-4">
                       <div class="col-lg-8">
                         <div class="section-title">Status Pembayaran</div>
                         <p class="section-lead">
-
-                          @if (in_array($order->orderStatus->code, ['perlu-dikirim', 'dikirim', 'selesai']))
+                          @if (in_array($status->code, ['perlu-dikirim', 'dikirim', 'selesai']))
                             Pembayaran berhasil dikonfirmasi, Pada
                             {{ $order->payment->confirmed_at->isoFormat('dddd, D MMMM Y, HH:MM') }}
                           @endif
-
-                          @if ($order->orderStatus->code === 'belum-bayar')
+                          @if ($status->code === 'belum-bayar')
                             Belum Bayar
                           @endif
-
-                          @if (in_array($order->orderStatus->code, ['perlu-dicek', 'dibatalkan']))
+                          @if (in_array($status->code, ['perlu-dicek', 'dibatalkan']))
                             &mdash;
                           @endif
-
                         </p>
                         <div class="section-title">Pengiriman</div>
                         <p class="section-lead">
-                          @php
-                          $shipping = $order->shipping;
-                          @endphp
-                          {{ Str::upper($shipping->code) . $shipping->service . ' Estimasi :' . $shipping->etd }}
+                          {{ Str::upper($shipping->code) . ' ' . $shipping->service . ' Estimasi: ' . $shipping->etd }}
                         </p>
                       </div>
                       <div class="col-lg-4 text-right">
@@ -202,13 +191,13 @@
                         </div>
                         <div class="invoice-detail-item">
                           <div class="invoice-detail-name">Subtotal Pengiriman</div>
-                          <div class="invoice-detail-value">{{ rupiah_format($order->shipping->cost) }}</div>
+                          <div class="invoice-detail-value">{{ rupiah_format($shipping->cost) }}</div>
                         </div>
                         <hr class="mt-2 mb-2">
                         <div class="invoice-detail-item">
                           <div class="invoice-detail-name">Total</div>
                           <div class="invoice-detail-value invoice-detail-value-lg">
-                            {{ rupiah_format($order->subtotal + $order->shipping->cost) }}
+                            {{ rupiah_format($order->subtotal + $shipping->cost) }}
                           </div>
                         </div>
                       </div>
@@ -225,8 +214,14 @@
 @endsection
 
 @section('modal')
-  @if ($order->orderStatus->code === 'belum-bayar')
-    @include('user.order.includes.add-payment-proof-modal')
+  @if ($status->code === 'belum-bayar')
+    @include('user.order.modals.add-payment-proof')
+  @endif
+  @if (!in_array($status->code, ['belum-bayar', 'dibatalkan']))
+    @include('user.order.modals.payment-proof')
+  @endif
+  @if (in_array($status->code, ['dikirim', 'selesai']))
+    @include('user.order.modals.tracking-code')
   @endif
 @endsection
 
@@ -253,6 +248,13 @@
 
       $('#btn_upload_payment_proof').click(function() {
         $('#modal_add_payment_proof').modal('show');
+      });
+
+      $('#payment_proof').click(function() {
+        $('#modal_payment_proof').modal('show');
+      });
+      $('#tracking_code').click(function() {
+        $('#modal_tracking_code').modal('show');
       });
 
       $('#btn-upload-nanti').click(function() {

@@ -18,7 +18,7 @@ $factory->define(Forum::class, function (Faker $faker) {
         },
         'title' => $faker->text,
         'slug' => Str::slug($faker->unique()->text),
-        'body' => $faker->paragraph,
-        'is_solved' => $faker->boolean(75)
+        'body' => $faker->paragraph(5),
+        'is_solved' => $faker->boolean(50)
     ];
 });

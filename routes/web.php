@@ -55,9 +55,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('/address', 'AddressController')->except(['show']);
         Route::put('/address/setmain/{address}', 'AddressController@setIsMain')->name('address.setmain');
         Route::get('/address/cities/{id}', 'AddressController@cities')->name('address.cities');
-        Route::resource('/order', 'OrderController')->except(['show']);
-        Route::get('/order/detail/{order:invoice}', 'OrderController@show')->name('order.detail');
-        Route::post('/order/add-payment-proof/{invoice}', 'OrderController@storePaymentProof')->name('order.add-payment-proof');
+
+        Route::resource('order', 'OrderController')->except(['show']);
+        Route::get('order/show/{id}-{invoice}', 'OrderController@show')->name('order.show');
+        Route::get('order/{id}/orderdone', 'OrderController@isDone')->name('order.is_done');
+        Route::post('order/addpaymentproof/{id}', 'OrderController@addPaymentProof')->name('order.add_payment_proof');
     });
 
     //Admin

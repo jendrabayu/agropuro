@@ -50,49 +50,11 @@ class OrderController extends Controller
      * @param mixed $invoice
      * @return \Illuminate\View\View
      */
-    public function show($invoice)
+    public function show($id, $invoice)
     {
-        $order = auth()->user()->orders()->where('invoice', $invoice)->firstOrFail();
+        $order = auth()->user()->orders()->findOrFail($id);
         return view('user.order.detail', compact('order'));
     }
-
-
-    public function update(Request $request,  $id)
-    {
-        $order = Order::findOrFail($id);
-
-        if ($request->only('bukti_transfer')) {
-            $request->validate(['bukti_transfer' => ['required', 'max:1000', 'image']]);
-            $buktiTransfer = image_upload($request, 'bukti_transfer', 'images/bukti_transfer/');
-            $order->update([
-                'order_status_id' => self::types['sedang-dicek'],
-                'bukti_transfer' => $buktiTransfer,
-            ]);
-            return redirect()->route('customer.order.index', ['type' => 'perlu-dicek']);
-        }
-    }
-
-    public function storePaymentProof(Request $request, $invoice)
-    {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'bank' => 'required|string',
-            'account_number' => 'required|string',
-            'payment_proof' => 'nullable|image|max:1000'
-        ]);
-
-        $order = Order::where('invoice', $invoice)->firstOrFail();
-
-        if ($request->hasFile('payment_proof')) {
-            $data['payment_proof'] = $request->file('payment_proof')->store('images/bukti_transfer', 'public');
-        }
-
-        $order->update(['order_status_id' => 2]);
-        $order->payment()->update($data);
-
-        return back()->with('info', 'Menunggu Pembayaran Dikonfirmasi');
-    }
-
 
     public function store(Request $request)
     {
@@ -144,15 +106,46 @@ class OrderController extends Controller
 
         return response()->json([
             'data' => $order,
-            'href' => route('customer.order.detail', [
-                'order' => $order->invoice,
+            'href' => route('customer.order.show', [
+                $order->id,
+                $order->invoice,
                 'upload-bukti-transfer' => 'show'
             ])
         ]);
     }
 
+    public function isDone($id)
+    {
+        auth()->user()->orders()
+            ->where('order_status_id', get_order_status_id('dikirim'))
+            ->findOrFail($id)->update(['order_status_id' => get_order_status_id('selesai')]);
+        return back()->with('info', 'Pesanan Sudah Selesai');
+    }
+
+    public function addPaymentProof(Request $request, $id)
+    {
+        $order = auth()->user()->orders()
+            ->where('order_status_id', get_order_status_id('belum-bayar'))->findOrFail($id);
+
+        $validated = $this->validate($request, [
+            'name' => ['required', 'string', 'max:255'],
+            'bank' => ['required', 'string', 'max:255'],
+            'account_number' => ['required', 'string', 'max:255'],
+            'payment_proof' => ['nullable', 'mimes:jpeg,jpg,png', 'max:1000']
+        ]);
+
+        if ($request->has('payment_proof')) {
+            $validated['payment_proof'] = $request->file('payment_proof')->store('images/payment-proof', 'public');
+        }
+
+        $order->update(['order_status_id' => get_order_status_id('perlu-dicek')]);
+        $order->payment()->update($validated);
+
+        return back()->with('info', 'Menunggu Pembayaran Dikonfirmasi Admin');
+    }
+
     private function generateInvoice()
     {
-        return (intval(date('ydmhs')) + intval(date('dhs'))) . Str::upper(Str::random(3)) . auth()->id();
+        return Str::upper(date('ydm') . Str::random(3) . auth()->id() . Order::latest()->first()->id);
     }
 }
