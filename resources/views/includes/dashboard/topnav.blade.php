@@ -10,7 +10,7 @@
       <div class="d-sm-none d-lg-inline-block">{{ set_name_of_user(auth()->user()->name) }}</div>
     </a>
     <div class="dropdown-menu dropdown-menu-right">
-      <a href="{{ route('profile-setting.index') }}" class="dropdown-item has-icon">
+      <a href="{{ route('accountsetting.index') }}" class="dropdown-item has-icon">
         <i class="far fa-user"></i> Profile
       </a>
       <div class="dropdown-divider"></div>

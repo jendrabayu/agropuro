@@ -31,7 +31,7 @@ class ForumController extends Controller
           break;
 
         case 'emptyanswer':
-          $forums->withCount(['forumComments' => function ($q) {
+          $forums->where('is_solved', false)->withCount(['forumComments' => function ($q) {
             $q->where('is_answer', true);
           }])->having('forum_comments_count', '=', 0);
           $contentTitle = '<h4>Belum Ada Jawaban</h4>';

@@ -5,7 +5,7 @@
   <h1>Detail Penjadwalan Tanam</h1>
   <div class="section-header-breadcrumb">
     <div class="breadcrumb-item active">
-      <a href="{{ route('planting-schedule.index') }}">Penjadwalan Tanam</a>
+      <a href="{{ route('plantingschedule.index') }}">Penjadwalan Tanam</a>
     </div>
     <div class="breadcrumb-item">Detail</div>
 
@@ -75,10 +75,8 @@
         <div class="card-header">
           <h4>Daftar Aktivitas</h4>
           <div class="card-header-action">
-            <a class="btn btn-light" href="{{ route('planting-schedule.show', [
-                  'planting_schedule' => $schedule->id,
-                  'filterdate' => 'now',
-              ]) }}">Hari ini</a>
+            <a class="btn btn-light"
+              href="{{ route('plantingschedule.show', [$schedule->id, 'filterdate' => 'now']) }}">Hari ini</a>
             <span>
               <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
@@ -86,15 +84,11 @@
               </button>
               <div class="dropdown-menu">
 
-                <a class="dropdown-item" href="{{ route('planting-schedule.show', [
-                      'planting_schedule' => $schedule->id,
-                      'orderdate' => 'desc',
-                  ]) }}">Terlama</a>
+                <a class="dropdown-item"
+                  href="{{ route('plantingschedule.show', [$schedule->id, 'orderdate' => 'desc']) }}">Terlama</a>
 
-                <a class="dropdown-item" href="{{ route('planting-schedule.show', [
-                      'planting_schedule' => $schedule->id,
-                      'orderdate' => 'asc',
-                  ]) }}">Terbaru</a>
+                <a class="dropdown-item"
+                  href="{{ route('plantingschedule.show', [$schedule->id, 'orderdate' => 'asc']) }}">Terbaru</a>
 
               </div>
             </span>
@@ -121,14 +115,14 @@
                     </span>
                     @if ($activity->is_done)
                       <span class="bullet"></span>
-                      <a class="text-job text-success" href="{{ route('planting-schedule-detail.is-done', [
+                      <a class="text-job text-success" href="{{ route('plantingscheduledetail.is_done', [
                             'is_done' => false,
                             'id' => $activity->id,
                         ]) }}">Buka Kembali</a>
 
                     @else
                       <span class="bullet"></span>
-                      <a class="text-job text-success" href="{{ route('planting-schedule-detail.is-done', [
+                      <a class="text-job text-success" href="{{ route('plantingscheduledetail.is_done', [
                             'is_done' => true,
                             'id' => $activity->id,
                         ]) }}">Tandai Selesai</a>
@@ -136,7 +130,7 @@
                       <a class="text-job text-warning" data-action="" href="#">Edit</a>
                       <span class="bullet"></span>
                       <a class="text-job text-danger btn_delete_activity"
-                        data-action="{{ route('planting-schedule-detail.destroy', $activity->id) }}" href="#">Hapus</a>
+                        data-action="{{ route('plantingscheduledetail.destroy', $activity->id) }}" href="#">Hapus</a>
                     @endif
                     @if ($activity->is_done)
                       <span class="badge badge-success ml-2">Selesai</span>
@@ -161,7 +155,7 @@
     @method('DELETE')
   </form>
 
-  <form action="{{ route('planting-schedule.destroy', $schedule->id) }}" method="POST" id="form_delete_schedule">
+  <form action="{{ route('plantingschedule.destroy', $schedule->id) }}" method="POST" id="form_delete_schedule">
     @csrf
     @method('DELETE')
   </form>
@@ -179,7 +173,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <form action="{{ route('planting-schedule-detail.store') }}" method="POST">
+          <form action="{{ route('plantingscheduledetail.store') }}" method="POST">
             @csrf
             <input type="hidden" name="planting_schedule_id" value="{{ $schedule->id }}">
             <div class="form-group">

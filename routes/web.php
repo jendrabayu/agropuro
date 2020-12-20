@@ -27,20 +27,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //Forum
     Route::resource('forum', 'ForumController')->except(['index', 'show']);
-    Route::put('/forum/solved/{forum}', 'ForumController@solved')->name('forum.solved');
+    Route::put('forum/solved/{forum}', 'ForumController@solved')->name('forum.solved');
 
-    //profile setting fol all
-    Route::prefix('profile-setting')->name('profile-setting.')->group(function () {
-        Route::get('/', 'UserController@index')->name('index');
-        Route::put('/{user}', 'UserController@update')->name('update');
-    });
+    //Account Settings
+    Route::get('accountsetting', 'UserController@index')->name('accountsetting.index');
+    Route::put('accountsetting/{user}', 'UserController@update')->name('accountsetting.update');
 
     //Planting Schedule
-    Route::resource('planting-schedule', 'PlantingScheduleController');
+    Route::resource('plantingschedule', 'PlantingScheduleController');
 
     //Planting Schedule Detail
-    Route::prefix('planting-schedule-detail')->name('planting-schedule-detail.')->group(function () {
-        Route::get('/is-done', 'PlantingScheduleDetailController@isDone')->name('is-done');
+    Route::prefix('plantingscheduledetail')->name('plantingscheduledetail.')->group(function () {
+        Route::get('/isdone', 'PlantingScheduleDetailController@isDone')->name('is_done');
         Route::post('/', 'PlantingScheduleDetailController@store')->name('store');
         Route::delete('/{id}', 'PlantingScheduleDetailController@destroy')->name('destroy');
     });

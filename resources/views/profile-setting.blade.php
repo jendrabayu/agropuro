@@ -8,7 +8,7 @@
       <div class="col-lg-8">
         @include('includes.error-alert')
         @include('includes.info-alert')
-        <form action="{{ route('profile-setting.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('accountsetting.update', $user->id) }}" method="POST" enctype="multipart/form-data">
           @csrf
           @method('PUT')
           <div class="card">

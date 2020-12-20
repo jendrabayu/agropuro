@@ -27,7 +27,7 @@
                   <div class="d-sm-none d-lg-inline-block">{{ set_name_of_user(auth()->user()->name) }}</div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
-                  <a href="{{ route('profile-setting.index') }}" class="dropdown-item has-icon">
+                  <a href="{{ route('accountsetting.index') }}" class="dropdown-item has-icon">
                     <i class="far fa-user"></i> Profile
                   </a>
                   <div class="dropdown-divider"></div>
@@ -65,8 +65,8 @@
               <a href="{{ route('forum.index') }}" class="nav-link"><span>Forum</span></a>
             </li>
             <li
-              class="nav-item {{ set_active('planting-schedule') }} {{ request()->is('planting-schedule/*') ? 'active' : '' }}">
-              <a href="{{ route('planting-schedule.index') }}" class="nav-link"><span>Penjadwalan Tanam</span></a>
+              class="nav-item {{ set_active('plantingschedule') }} {{ request()->is('plantingschedule/*') ? 'active' : '' }}">
+              <a href="{{ route('plantingschedule.index') }}" class="nav-link"><span>Penjadwalan Tanam</span></a>
             </li>
             <li class="nav-item">
               <a href="{{ route('product.index') }}" class="nav-link"><span>Belanja</span></a>

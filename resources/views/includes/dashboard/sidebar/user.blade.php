@@ -11,7 +11,7 @@
           class="fas fa-box"></i>
         <span>Pesanan Saya</span></a></li>
 
-    <li class="{{ set_active('profile-setting') }}"><a class="nav-link" href="{{ route('profile-setting.index') }}"><i
+    <li class="{{ set_active('accountsetting') }}"><a class="nav-link" href="{{ route('accountsetting.index') }}"><i
           class="fas fa-user-cog"></i>
         <span>Pengaturan Akun</span></a></li>
 
@@ -22,7 +22,7 @@
     <li class="menu-header">Fitur</li>
     <li><a class="nav-link" href="{{ route('forum.index') }}"><i class="fas fa-comments"></i>
         <span>Forum</span></a></li>
-    <li><a class="nav-link" href="{{ route('planting-schedule.index') }}"><i class="fas fa-leaf"></i>
+    <li><a class="nav-link" href="{{ route('plantingschedule.index') }}"><i class="fas fa-leaf"></i>
         <span>Penjadwalan Tanam</span></a></li>
 
     <li class="menu-header">Belanja</li>

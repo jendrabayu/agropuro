@@ -36,11 +36,11 @@
                       <a href="#" data-toggle="dropdown"><i class="fas fa-ellipsis-h"></i></a>
                       <div class="dropdown-menu">
                         <div class="dropdown-title">Opsi</div>
-                        <a href="{{ route('planting-schedule.show', $schedule->id) }}" class="dropdown-item has-icon"><i
+                        <a href="{{ route('plantingschedule.show', $schedule->id) }}" class="dropdown-item has-icon"><i
                             class="fas fa-list"></i> Detail</a>
                         <a href="#" class="dropdown-item has-icon" data-action=""><i class="fas fa-edit"></i> Edit</a>
                         <a href="#" class="dropdown-item has-icon text-danger btn_delete_schedule"
-                          data-action="{{ route('planting-schedule.destroy', $schedule->id) }}"><i
+                          data-action="{{ route('plantingschedule.destroy', $schedule->id) }}"><i
                             class="fas fa-trash-alt"></i> Hapus</a>
                       </div>
                     </span>
@@ -79,7 +79,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <form action="{{ route('planting-schedule.store') }}" method="POST">
+          <form action="{{ route('plantingschedule.store') }}" method="POST">
             @csrf
             <div class="form-group">
               <label>Judul</label>

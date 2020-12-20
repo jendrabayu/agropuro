@@ -10,8 +10,8 @@
     <li class="{{ set_active('admin') }}"><a class="nav-link" href="{{ route('admin.dashboard') }}"><i
           class="fas fa-tachometer-alt"></i>
         <span>Dashboard</span></a></li>
-    <li class="{{ set_active('profile-setting') }}"><a target="_blank" class="nav-link"
-        href="{{ route('profile-setting.index') }}"><i class="fas fa-user-cog"></i>
+    <li class="{{ set_active('accountsetting') }}"><a target="_blank" class="nav-link"
+        href="{{ route('accountsetting.index') }}"><i class="fas fa-user-cog"></i>
         <span>Pengaturan Akun</span></a></li>
     <li class="{{ set_active('admin/customer') }}"><a class="nav-link" href="{{ route('admin.customer') }}"><i
           class="fas fa-users"></i>
@@ -28,7 +28,7 @@
         <span>Kategori</span></a></li>
 
     <li class="menu-header">Penjdwalan</li>
-    <li><a class="nav-link" target="_blank" href="{{ route('planting-schedule.index') }}"><i class="fas fa-leaf"></i>
+    <li><a class="nav-link" target="_blank" href="{{ route('plantingschedule.index') }}"><i class="fas fa-leaf"></i>
         <span>Penjadwalan Tanam</span></a></li>
 
 

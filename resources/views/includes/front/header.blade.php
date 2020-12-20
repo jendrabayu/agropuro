@@ -55,7 +55,7 @@
              <li><a href="#">Menu</a>
                <ul class="header__menu__dropdown">
                  <li><a target="_blank" href="{{ route('forum.index') }}">Forum</a></li>
-                 <li><a target="_blank" href="{{ route('planting-schedule.index') }}">Penjadwalan Tanam</a>
+                 <li><a target="_blank" href="{{ route('plantingschedule.index') }}">Penjadwalan Tanam</a>
                  </li>
                </ul>
              </li>
