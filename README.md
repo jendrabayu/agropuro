@@ -7,6 +7,7 @@
 - run "php artisan key:generate" 
 - run "php artisan storage:link" 
 - run "php artisan config:cache" 
+- run "php artisan migrate:fresh"
 - run "php artisan migrate"
 - run "php artisan db:seed"
 - run "npm install"
