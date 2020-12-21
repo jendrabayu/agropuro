@@ -74,7 +74,7 @@ class OrderController extends Controller
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'order_status_id' => get_order_status_id('belum-bayar'),
-                'invoice' => $this->generateInvoice(),
+                'invoice' => Str::upper(date('ydm') . Str::padLeft((int)(Order::latest()->first()->id ?? 0), 5, 0) . Str::random(3)),
                 'subtotal' => $request->order['subTotal'],
                 'message' => $request->order['message'],
             ]);
@@ -164,15 +164,5 @@ class OrderController extends Controller
         $order->payment()->update($validated);
 
         return back()->with('info', 'Menunggu Pembayaran Dikonfirmasi Admin');
-    }
-
-    /**
-     * Generate order invoice
-     * 
-     * @return string
-     */
-    private function generateInvoice()
-    {
-        return Str::upper(date('ydm') . Str::random(3) . auth()->id() .( Order::latest()->first()->id ?? '') );
     }
 }

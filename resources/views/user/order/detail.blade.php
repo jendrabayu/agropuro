@@ -17,6 +17,7 @@
   $payment_bank = $order->payment->bankAccount;
   $shipping = $order->shipping;
   $address = $order->shipping->address;
+  $order_details = $order->orderDetails;
   @endphp
 
   <div class="section-header">
@@ -37,6 +38,10 @@
       <div class="col-lg-12">
         @include('includes.bs-alert')
         @include('includes.error-alert')
+
+        <!--ORDER STATUS AND ACTION -->
+        <!--ORDER STATUS AND ACTION -->
+        <!--ORDER STATUS AND ACTION -->
         <div class="card">
           <div class="card-body">
             <h5 class="text-dark">{{ $status->status_user }}</h5>
@@ -80,8 +85,16 @@
                   Sudah Diterima</a>
               @endif
             </div>
+
           </div>
         </div>
+        <!--END ORDER STATUS AND ACTION -->
+        <!--END ORDER STATUS AND ACTION -->
+        <!--END ORDER STATUS AND ACTION -->
+
+        <!--INVOICE -->
+        <!--INVOICE -->
+        <!--INVOICE -->
         <div class="card">
           <div class="card-header">
             <h4></h4>
@@ -151,7 +164,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          @foreach ($order->orderDetails as $index => $item)
+                          @foreach ($order_details as $item)
                             <tr>
                               <th><img class="img-fluid m-2" width="50" src="{{ Storage::url($item->product->gambar) }}">
                               </th>
@@ -208,6 +221,9 @@
             </div>
           </div>
         </div>
+        <!--END INVOICE -->
+        <!--END INVOICE -->
+        <!--END INVOICE -->
       </div>
     </div>
   </div>
