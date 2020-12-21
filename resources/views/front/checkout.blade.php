@@ -205,11 +205,12 @@
 
         axios.post("{{ route('customer.order.store') }}", data)
           .then(resp => {
+
             window.location.href = resp.data.href;
           })
           .catch(error => {
             $(this).prop('disabled', false);
-            console.log(error)
+            console.log(error.response)
           })
       });
 

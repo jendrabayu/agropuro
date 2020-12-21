@@ -60,7 +60,7 @@ class CartController extends Controller
      */
     public function update(Request $request)
     {
-        $request->validate(['carts' => 'array|required']);
+        $request->validate(['carts' => ['array', 'required']]);
 
         foreach ($request->carts as $item) {
             $product = Product::where('id', $item['product_id'])->first();

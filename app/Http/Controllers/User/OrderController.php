@@ -15,6 +15,7 @@ use App\Shipping;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
@@ -56,64 +57,78 @@ class OrderController extends Controller
         return view('user.order.detail', compact('order'));
     }
 
+    /**
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'order' => 'array|required',
-            'payment' => 'array|required',
-            'shipping' => 'array|required',
+            'order' => ['array', 'required'],
+            'payment' => ['array', 'required'],
+            'shipping' => ['array', 'required'],
         ]);
 
-        $order = Order::create([
-            'user_id' => auth()->id(),
-            'order_status_id' => 1,
-            'invoice' => $this->generateInvoice(),
-            'subtotal' => $request->order['subTotal'],
-            'message' => $request->order['message'],
-        ]);
-
-        $payment = Payment::create([
-            'order_id' => $order->id,
-            'bank_account_id' => $request->payment['bank_account_id'],
-        ]);
-
-        $shipping = Shipping::create([
-            'order_id' => $order->id,
-            'address_id' => $request->shipping['address_id'],
-            'code' => $request->shipping['code'],
-            'service' => $request->shipping['service'],
-            'cost' => $request->shipping['cost'],
-            'etd' => $request->shipping['etd']
-        ]);
-
-        $order->payment_id = $payment->id;
-        $order->shipping_id = $shipping->id;
-        $order->save();
-
-        $carts = Cart::where('user_id', get_user_id())->get();
-
-        foreach ($carts as $cart) {
-            OrderDetail::create([
-                'order_id' => $order->id,
-                'product_id' => $cart->product->id,
-                'price' => $cart->product->harga,
-                'quantity' => $cart->quantity
+        DB::beginTransaction();
+        try {
+            $order = Order::create([
+                'user_id' => auth()->id(),
+                'order_status_id' => get_order_status_id('belum-bayar'),
+                'invoice' => $this->generateInvoice(),
+                'subtotal' => $request->order['subTotal'],
+                'message' => $request->order['message'],
             ]);
 
-            Product::where('id', $cart->product->id)->decrement('stok', $cart->quantity);
-            Cart::where('id', $cart->id)->delete();
-        }
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'bank_account_id' => $request->payment['bank_account_id'],
+            ]);
 
-        return response()->json([
-            'data' => $order,
-            'href' => route('customer.order.show', [
-                $order->id,
-                $order->invoice,
-                'upload-bukti-transfer' => 'show'
-            ])
-        ]);
+            $shipping = Shipping::create([
+                'order_id' => $order->id,
+                'address_id' => $request->shipping['address_id'],
+                'code' => $request->shipping['code'],
+                'service' => $request->shipping['service'],
+                'cost' => $request->shipping['cost'],
+                'etd' => $request->shipping['etd']
+            ]);
+
+            $order->update(['payment_id' => $payment->id, 'shipping_id' =>  $shipping->id]);
+
+            $carts = auth()->user()->carts;
+
+            $carts->each(function ($cart) use ($order) {
+                OrderDetail::create([
+                    'order_id' => $order->id,
+                    'product_id' => $cart->product->id,
+                    'price' => $cart->product->harga,
+                    'quantity' => $cart->quantity
+                ]);
+
+                $cart->product()->decrement('stok', $cart->quantity);
+                $cart->delete();
+            });
+
+            DB::commit();
+
+            return response()->json([
+                'data' => $order,
+                'href' => route('customer.order.show', [
+                    $order->id,
+                    $order->invoice,
+                    'upload-bukti-transfer' => 'show'
+                ])
+            ]);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+        }
     }
 
+    /**
+     * Change status order to done
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function isDone($id)
     {
         auth()->user()->orders()
@@ -122,6 +137,13 @@ class OrderController extends Controller
         return back()->with('info', 'Pesanan Sudah Selesai');
     }
 
+    /**
+     * Store payment proof in storage and change status
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function addPaymentProof(Request $request, $id)
     {
         $order = auth()->user()->orders()
@@ -144,8 +166,13 @@ class OrderController extends Controller
         return back()->with('info', 'Menunggu Pembayaran Dikonfirmasi Admin');
     }
 
+    /**
+     * Generate order invoice
+     * 
+     * @return string
+     */
     private function generateInvoice()
     {
-        return Str::upper(date('ydm') . Str::random(3) . auth()->id() . Order::latest()->first()->id);
+        return Str::upper(date('ydm') . Str::random(3) . auth()->id() .( Order::latest()->first()->id ?? '') );
     }
 }
