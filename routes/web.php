@@ -39,7 +39,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Planting Schedule Detail
     Route::prefix('plantingscheduledetail')->name('plantingscheduledetail.')->group(function () {
         Route::get('/isdone', 'PlantingScheduleDetailController@isDone')->name('is_done');
+        Route::get('/{id}/edit', 'PlantingScheduleDetailController@edit')->name('edit');
         Route::post('/', 'PlantingScheduleDetailController@store')->name('store');
+        Route::put('/{id}', 'PlantingScheduleDetailController@update')->name('update');
         Route::delete('/{id}', 'PlantingScheduleDetailController@destroy')->name('destroy');
     });
 

@@ -24,7 +24,10 @@ class PlantingScheduleUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => ['required', 'string', 'min:3', 'max:250'],
+            'start_at' => ['required', 'date', 'date_format:Y-m-d'],
+            'end_at' => ['required', 'date', 'date_format:Y-m-d'],
+            'information' => ['nullable']
         ];
     }
 }

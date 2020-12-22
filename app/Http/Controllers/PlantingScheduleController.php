@@ -16,6 +16,33 @@ class PlantingScheduleController extends Controller
         ]);
     }
 
+    public function edit($id)
+    {
+        $schedule = auth()->user()->PlantingSchedules()->findOrFail($id);
+        $firstDate = $schedule->PlantingScheduleDetails()->orderBy('date')->first()->date ?? null;
+        $lastDate = $schedule->PlantingScheduleDetails()->orderByDesc('date')->first()->date ?? null;
+        return view('planting-schedule.edit', compact('schedule', 'firstDate', 'lastDate'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $schedule = auth()->user()->PlantingSchedules()->findOrFail($id);
+        $firstDate = $schedule->PlantingScheduleDetails()->orderBy('date')->first()->date ?? null;
+        $lastDate = $schedule->PlantingScheduleDetails()->orderByDesc('date')->first()->date ?? null;
+
+        $validated = $this->validate($request, [
+            'title' => ['required', 'string', 'min:3', 'max:250'],
+            'start_at' => ['required', 'date', 'date_format:Y-m-d', $firstDate ? 'before_or_equal:' . $firstDate : null],
+            'end_at' => ['required', 'date', 'date_format:Y-m-d', $lastDate ? 'after_or_equal:' . $lastDate : null],
+            'information' => ['nullable']
+        ]);
+
+        $validated['slug'] = Str::slug($request->title);
+
+        $schedule->update($validated);
+        return  redirect()->route('plantingschedule.show',  $schedule->id)->with('info', 'Data Penjadwalan Berhasil Diperbarui');
+    }
+
     public function show(Request $request, $id)
     {
         $schedule = auth()->user()->PlantingSchedules()->findOrFail($id);

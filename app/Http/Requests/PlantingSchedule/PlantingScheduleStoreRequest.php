@@ -27,7 +27,7 @@ class PlantingScheduleStoreRequest extends FormRequest
             'title' => ['required', 'string', 'min:3', 'max:250'],
             'start_at' => ['required', 'date', 'date_format:Y-m-d'],
             'end_at' => ['required', 'date', 'date_format:Y-m-d'],
-            'information' => ['nullable', 'string']
+            'information' => ['nullable']
         ];
     }
 

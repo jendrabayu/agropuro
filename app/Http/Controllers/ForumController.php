@@ -54,7 +54,7 @@ class ForumController extends Controller
 
     if ($request->has('category')) {
       $categoryName = ForumCategory::where('slug', $request->category)->firstOrFail()->name;
-      $contentTitle = $contentTitle . '<p class="text-dark m-0"> Kategori: ' . $categoryName . '</p>';
+      $contentTitle = $contentTitle . '<p class="text-dark m-0"> <span class="font-weight-bold">Kategori:</span> ' . $categoryName . '</p>';
       $forums->whereHas('forumCategory', function ($q) use ($request) {
         $q->where('slug', $request->get('category'));
       });

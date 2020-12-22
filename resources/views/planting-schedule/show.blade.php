@@ -2,13 +2,12 @@
 
 
 @section('section_header')
-  <h1>Detail Penjadwalan Tanam</h1>
+  <h1>Detail</h1>
   <div class="section-header-breadcrumb">
     <div class="breadcrumb-item active">
       <a href="{{ route('plantingschedule.index') }}">Penjadwalan Tanam</a>
     </div>
-    <div class="breadcrumb-item">Detail</div>
-
+    <div class="breadcrumb-item">Detail Penjadwalan Tanam</div>
   </div>
 @endsection
 
@@ -24,12 +23,11 @@
     <div class="col-lg-12">
       <div class="card">
         <div class="card-header">
-          <h4>Informasi &nbsp; &nbsp; <span class="font-weight-normal text-dark">Hari ini :
-              {{ now()->isoFormat('dddd, D MMMM Y') }}</span></h4>
+          <h4>Informasi</h4>
           <div class="card-header-action">
             <a href="" class="btn btn-danger" id="btn_delete_schedule"><i class="fas fa-trash-alt"></i> Hapus</a>
-
-            <a href="" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
+            <a href="{{ route('plantingschedule.edit', $schedule->id) }}" class="btn btn-warning"><i
+                class="fas fa-edit"></i> Edit</a>
             <a data-collapse="#information-card-collapse" class="btn btn-icon btn-info" href="#"><i
                 class="fas fa-plus"></i></a>
           </div>
@@ -83,13 +81,11 @@
                 Urutkan Tanggal
               </button>
               <div class="dropdown-menu">
-
                 <a class="dropdown-item"
                   href="{{ route('plantingschedule.show', [$schedule->id, 'orderdate' => 'desc']) }}">Terlama</a>
 
                 <a class="dropdown-item"
                   href="{{ route('plantingschedule.show', [$schedule->id, 'orderdate' => 'asc']) }}">Terbaru</a>
-
               </div>
             </span>
             <button class="btn btn-icon icon-left btn-primary" data-toggle="modal" data-target="#modal_add_activity"><i
@@ -127,7 +123,8 @@
                             'id' => $activity->id,
                         ]) }}">Tandai Selesai</a>
                       <span class="bullet"></span>
-                      <a class="text-job text-warning" data-action="" href="#">Edit</a>
+                      <a class="text-job text-warning" data-action=""
+                        href="{{ route('plantingscheduledetail.edit', $activity->id) }}">Edit</a>
                       <span class="bullet"></span>
                       <a class="text-job text-danger btn_delete_activity"
                         data-action="{{ route('plantingscheduledetail.destroy', $activity->id) }}" href="#">Hapus</a>
@@ -138,7 +135,7 @@
                   </div>
                   <h6 class="text-dark m-0">{{ $activity->activity }}</h6>
                   <p>
-                    {{ $activity->information }}
+                    {!! $activity->information !!}
                   </p>
                 </div>
               </div>
@@ -194,9 +191,9 @@
                 {{ $schedule->end_at->isoFormat('dddd, D MMMM Y') }}
               </small>
             </div>
-            <div class="form-group">
-              <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
-              <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="form-group text-right">
+              <button type="button" class="btn btn-warning mr-1" data-dismiss="modal">Tutup</button>
+              <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
           </form>
         </div>
@@ -222,7 +219,10 @@
         opens: 'right',
         drops: 'up',
         singleDatePicker: true,
-        endDate: moment()
+        minDate: moment("{{ $schedule->start_at }}"),
+        maxDate: moment("{{ $schedule->end_at }}"),
+        startDate: moment("{{ $schedule->start_at }}"),
+        endDate: moment("{{ $schedule->end_at }}")
       }, function(start) {
         $('#btn_datepicker span').html(start.format('YYYY-MM-DD'));
         $('input[name=date]').val(start.format('YYYY-MM-DD'));

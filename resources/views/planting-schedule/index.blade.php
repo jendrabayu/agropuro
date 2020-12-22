@@ -1,15 +1,7 @@
 @extends('layouts.app-skeleton')
 
-
 @section('section_header')
   <h1>Penjadwalan Tanam</h1>
-  <div class="section-header-breadcrumb">
-    <div class="breadcrumb-item active">
-      {{-- <a href="{{ route('forum.index') }}">Forum</a> --}}
-    </div>
-    {{-- <div class="breadcrumb-item">{!! $contentTitle !!}</div>
-    --}}
-  </div>
 @endsection
 
 @section('app')
@@ -19,10 +11,10 @@
       @include('includes.bs-alert')
       <div class="card">
         <div class="card-header">
-          <h4>Daftar Penjadwalan Tanam</h4>
+          <h4>Daftar Penjadwalan</h4>
           <div class="card-header-action">
             <button class="btn btn-icon icon-left btn-primary" data-toggle="modal" data-target="#modal_add_schedule"><i
-                class="fas fa-plus"></i> Buat Penjadwalan Baru</button>
+                class="fas fa-plus"></i> Tambah Penjadwalan Baru</button>
           </div>
         </div>
         <div class="card-body">
@@ -38,13 +30,15 @@
                         <div class="dropdown-title">Opsi</div>
                         <a href="{{ route('plantingschedule.show', $schedule->id) }}" class="dropdown-item has-icon"><i
                             class="fas fa-list"></i> Detail</a>
-                        <a href="#" class="dropdown-item has-icon" data-action=""><i class="fas fa-edit"></i> Edit</a>
+                        <a href="{{ route('plantingschedule.edit', $schedule->id) }}" class="dropdown-item has-icon"
+                          data-action=""><i class="fas fa-edit"></i> Edit</a>
                         <a href="#" class="dropdown-item has-icon text-danger btn_delete_schedule"
                           data-action="{{ route('plantingschedule.destroy', $schedule->id) }}"><i
                             class="fas fa-trash-alt"></i> Hapus</a>
                       </div>
                     </span>
-                    <h6 class="text-dark"> {{ $schedule->title }}</h6>
+                    <h6><a class="text-dark"
+                        href="{{ route('plantingschedule.show', $schedule->id) }}">{{ $schedule->title }}</a></h6>
                   </div>
                   <div class="d-flex justify-content-center align-items-center bg-primary px-3 text-white">
                     <span> {{ $schedule->PlantingScheduleDetails->count() }}</span>
@@ -60,7 +54,6 @@
     </div>
   </div>
 
-
   <form action="" method="POST" id="form_delete_schedule">
     @csrf
     @method('DELETE')
@@ -68,8 +61,7 @@
 @endsection
 
 @section('modal')
-  <!-- Modal -->
-  <div class="modal fade" id="modal_add_schedule" tabindex="-1" aria-labelledby="modal_add_schedule" aria-hidden="true">
+  <div class="modal fade" id="modal_add_schedule" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -96,9 +88,9 @@
               <label>Detail</label>
               <textarea name="information" id="information"></textarea>
             </div>
-            <div class="form-group">
-              <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
-              <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="form-group text-right">
+              <button type="button" class="btn btn-warning mr-1" data-dismiss="modal">Tutup</button>
+              <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
           </form>
         </div>
@@ -106,7 +98,6 @@
     </div>
   </div>
 @endsection
-
 
 @push('css')
   <link rel="stylesheet" href="{{ asset('assets/modules/bootstrap-daterangepicker/daterangepicker.css') }}">
@@ -117,9 +108,6 @@
   <script src="{{ asset('assets/modules/bootstrap-daterangepicker/moment.min.js') }}"></script>
   <script src="{{ asset('assets/modules/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
   <script src="{{ asset('assets/modules/summernote/summernote-bs4.min.js') }}"></script>
-@endpush
-
-@push('js')
   <script>
     $(document).ready(function() {
       $('#btn_datefilter').daterangepicker({
@@ -140,7 +128,6 @@
 
       $('#information').summernote({
         height: 250,
-
         dialogsInBody: true,
         toolbar: [
           ['style', ['style']],
