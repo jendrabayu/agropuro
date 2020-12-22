@@ -8,6 +8,11 @@ use App\User;
 
 class CustomerController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function __invoke(CustomersDataTable $customersDataTable)
     {
         return $customersDataTable->render('admin.customer', [

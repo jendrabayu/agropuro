@@ -12,81 +12,150 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
-    /**
-     * 
-     * 
-     */
+
     public function __construct()
     {
         $this->middleware('check_order_payment');
     }
 
     /**
+     * Display a listing of the resource.
      * 
-     * @see https://laravel.com/docs/7.x/eloquent-relationships#querying-relationship-existence
-     * @param \Illuminate\Http\Request
+     * @param \App\DataTables\Admin\OrderDataTable $orderDataTable
      * @return \Illuminate\View\View
      */
     public function index(OrderDataTable $orderDataTable)
     {
         return $orderDataTable->render('admin.order.index', [
-            'orderStatus' => OrderStatus::all()
+            'order_statuses' => OrderStatus::all()
         ]);
     }
 
-    public function detail($invoice)
+    /**
+     *  Display the specified resource.
+     * 
+     * @param int id
+     * @param string $invoice
+     * @return \Illuminate\View\View
+     */
+    public function show($id, $invoice)
     {
-        $order = Order::where('invoice', $invoice)->firstOrFail();
-        return view('admin.order.detail', compact('order'));
+        return view('admin.order.show', [
+            'order' => Order::findOrFail($id)
+        ]);
     }
 
-    public function paymentIsConfirmed($invoice)
+
+    /**
+     * 
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function orderIsCanceled(Request $request, $id)
     {
-        $order = Order::where('invoice', $invoice)->firstOrFail();
-        $order->update([
-            'order_status_id' => get_order_status_id('perlu-dikirim')
+        $validated = $this->validate($request, ['canceled_reason' => ['required', 'string', 'max:255']], [], [
+            'canceled_reason' => 'alasan pembatalan'
         ]);
+        $validated['order_status_id'] = get_order_status_id('dibatalkan');
+
+        $order = Order::whereIn('order_status_id', [
+            get_order_status_id('belum-bayar'),
+            get_order_status_id('perlu-dicek'),
+            get_order_status_id('perlu-dikirim')
+        ])->findOrFail($id);
+
+        $order->update($validated);
+        $order->orderDetails->each(function ($item) {
+            $item->product->increment('stok', $item->quantity);
+        });
+        return back()->with('info', 'Pesanan Dibatalkan');
+    }
+
+    /**
+     * 
+     * 
+     * @param int id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function paymentIsConfirmed($id)
+    {
+        $order = Order::where('order_status_id', get_order_status_id('perlu-dicek'))->findOrFail($id);
+        $order->update(['order_status_id' => get_order_status_id('perlu-dikirim')]);
         $order->payment->update(['confirmed_at' => now()]);
         return back()->with('info', 'Pembayaran Berhasil Dikonfirmasi');
     }
 
-    public function orderIsCanceled(Request $request, $invoice)
+    /**
+     * 
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     */
+    public function addTrackingCode(Request $request, $id)
     {
-        $validated = $this->validate($request, ['canceled_reason' => ['required', 'string', 'max:255']]);
-        $validated['order_status_id'] = get_order_status_id('dibatalkan');
+        $validated = $this->validate($request, [
+            'tracking_code' => ['required', 'string', 'max:255']
+        ], [], [
+            'tracking_code' => 'nomor resi pengiriman'
+        ]);
 
-        $order = Order::where('invoice', $invoice)->firstOrFail();
-        $order->update($validated);
-        return back()->with('info', 'Pesanan Dibatalkan');
-    }
-
-    public function addTrackingCode(Request $request, $invoice)
-    {
-        $validated = $this->validate($request, ['tracking_code' => ['required', 'string', 'max:255']]);
-
-        $order = Order::where('invoice', $invoice)->firstOrFail();
+        $order = Order::where('order_status_id', get_order_status_id('perlu-dikirim'))->findOrFail($id);
         $order->update(['order_status_id' => get_order_status_id('dikirim')]);
         $order->shipping->update($validated);
         return back()->with('info', 'Berhasil Menambahkan Nomor Resi Pengiriman');
     }
 
-    public function updateTrackingCode()
+    /**
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     */
+    public function updateTrackingCode(Request $request, $id)
     {
-        
+        $validated = $this->validate($request, [
+            'tracking_code' => ['required', 'string', 'max:255']
+        ], [], [
+            'tracking_code' => 'nomor resi pengiriman'
+        ]);
+
+        $order = Order::whereIn('order_status_id', [
+            get_order_status_id('dikirim'),
+            get_order_status_id('selesai'),
+        ])->findOrFail($id);
+
+        $order->shipping->update($validated);
+        return back()->with('info', 'Nomor Resi Pengiriman Berhasil Diperbarui');
     }
 
-    public function orderIsDone($invoice)
+    /**
+     * 
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function orderIsDone($id)
     {
-        $order = Order::where('invoice', $invoice)->firstOrFail();
+        $order = Order::where('order_status_id', get_order_status_id('dikirim'))->findOrFail($id);
         $order->update(['order_status_id' => get_order_status_id('selesai')]);
-        return back()->with('info', 'Pesanan Selesai');
+        return back()->with('info', 'Pesanan Selesai & Barang Telah Tiba Ditujuan');
     }
 
+    /**
+     * 
+     * 
+     * @return \Illuminate\View\View
+     */
     public function recap()
     {
-        return view('admin.recap');
+        return view('admin.order.recap');
     }
 
+    /**
+     * 
+     * 
+     * 
+     */
     public function recapData(Request $request)
     {
         $filter = $request->filter ? $request->filter : 'daily';

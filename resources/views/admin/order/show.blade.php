@@ -74,21 +74,27 @@
 
             <div class="btn-group mt-3" role="group" aria-label="Basic example">
               @if (in_array($status->code, ['belum-bayar', 'perlu-dicek', 'perlu-dikirim']))
-                <button id="btn_cancel_order" class="btn btn-primary">Batalkan Pesanan</button>
+                <button id="btn_canceled_reason_modal" class="btn btn-primary">Batalkan Pesanan</button>
               @endif
 
               @if ($status->code === 'perlu-dicek')
-                <button id="btn_check_payment_proof" class="btn btn-primary">Cek Bukti Pembayaran</button>
+                <button id="btn_confirm_payment_proof_modal" class="btn btn-primary">Cek & Konfirmasi Pembayaran</button>
               @endif
 
               @if ($status->code === 'perlu-dikirim')
-                <a href="#" class="btn btn-primary" id="btn_add_tracking_code">Masukkan Nomor Resi Pengiriman</a>
+                <a href="#" class="btn btn-primary" id="btn_add_tracking_code_modal">Tambah Nomor Resi Pengiriman</a>
               @endif
 
-              @if ($status === 'dikirim')
-                <a href="{{ route('admin.order.order-is-done', $order->invoice) }}" id="btn_order_is_done"
-                  class="btn btn-primary">Selesaikan
-                  Pesanan</a>
+              @if ($status->code === 'dikirim')
+                <a href="{{ route('admin.order.order_done', $order->id) }}" class="btn btn-primary">Selesaikan Pesanan</a>
+              @endif
+
+              @if (in_array($status->code, ['perlu-dikirim', 'dikirim', 'selesai']))
+                <button id="btn_payment_proof" class="btn btn-primary">Pembayaran</button>
+              @endif
+
+              @if (in_array($status->code, ['dikirim', 'selesai']))
+                <button id="btn_tracking_code" class="btn btn-primary">Nomor Resi</button>
               @endif
             </div>
           </div>
@@ -311,44 +317,42 @@
 @section('modal')
   @include('admin.order.modals.add-canceled-reason')
   @include('admin.order.modals.confirm-payment-proof')
+  @include('admin.order.modals.payment-proof')
   @include('admin.order.modals.add-tracking-code')
+  @include('admin.order.modals.tracking-code')
 @endsection
 
 @push('js')
   <script src="{{ asset('assets/modules/print.js') }}"></script>
   <script>
-    $(document).ready(function() {
-      const btnCancelOrder = $('#btn_cancel_order');
-      const btnCheckPaymentProof = $('#btn_check_payment_proof');
-      const btnToCancelOrder = $('#btn_to_cancel_order');
-      const btnAddTrackingCode = $('#btn_add_tracking_code');
+    $(function() {
 
-      if (btnCancelOrder.length > 0) {
-        btnCancelOrder.click(function() {
-          $('#cancel_order_modal').modal('show');
-        });
-      }
+      $('#btn_to_canceled_reason_modal').click(function() {
+        $('#confirm_payment_proof_modal').modal('hide');
+        $('#add_canceled_reason_modal').modal('show');
+      });
 
-      if (btnCheckPaymentProof.length > 0) {
-        btnCheckPaymentProof.click(function() {
-          $('#check_payment_proof_modal').modal('show');
-        });
-      }
+      $('#btn_canceled_reason_modal').click(function() {
+        $('#add_canceled_reason_modal').modal('show');
+      });
 
-      if (btnToCancelOrder.length > 0) {
-        btnToCancelOrder.click(function() {
-          $('#check_payment_proof_modal').modal('hide');
-          $('#cancel_order_modal').modal('show');
-        });
-      }
+      $('#btn_confirm_payment_proof_modal').click(function() {
+        $('#confirm_payment_proof_modal').modal('show');
+      });
 
-      if (btnAddTrackingCode.length > 0) {
-        btnAddTrackingCode.click(function() {
-          $('#add_tracking_code_modal').modal('show');
-        });
-      }
+      $('#btn_add_tracking_code_modal').click(function() {
+        $('#add_tracking_code_modal').modal('show');
+      });
 
-      $('#cancel_order_modal').on('hidden.bs.modal', function(e) {
+      $('#btn_payment_proof').click(function() {
+        $('#payment_proof_modal').modal('show')
+      });
+
+      $('#btn_tracking_code').click(function() {
+        $('#tracking_code_modal').modal('show')
+      });
+
+      $('#add_canceled_reason_modal').on('hidden.bs.modal', function(e) {
         $('#canceled_reason').val('');
       });
 

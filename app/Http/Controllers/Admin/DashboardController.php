@@ -9,7 +9,12 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index(LatestOrderDataTable $latestOrderDataTable)
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function __invoke(LatestOrderDataTable $latestOrderDataTable)
     {
         return $latestOrderDataTable->render(
             'admin.dashboard',

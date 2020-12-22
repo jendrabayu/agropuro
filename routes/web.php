@@ -64,7 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //Admin
     Route::namespace('Admin')->prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
-        Route::get('/', 'DashboardController@index')->name('dashboard');
+        Route::get('/', 'DashboardController')->name('dashboard');
 
         //Forum Category
         Route::resource('forum-category', 'ForumCategoryController')->except(['show', 'edit']);
@@ -72,11 +72,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         //Order
         Route::prefix('order')->name('order.')->group(function () {
             Route::get('/', 'OrderController@index')->name('index');
-            Route::get('/detail/{invoice}', 'OrderController@detail')->name('detail');
-            Route::get('/order-is-done/{invoice}', 'OrderController@orderIsDone')->name('order-is-done');
-            Route::post('/payment-is-confirmed/{invoice}', 'OrderController@paymentIsConfirmed')->name('payment-is-confirmed');
-            Route::post('/order-is-canceled/{invoice}', 'OrderController@orderIsCanceled')->name('order-is-canceled');
-            Route::post('/add-tracking-code/{invoice}', 'OrderController@addTrackingCode')->name('add-tracking-code');
+            Route::get('orderdone/{id}', 'OrderController@orderIsDone')->name('order_done');
+            Route::get('show/{id}-{invoice}', 'OrderController@show')->name('show');
+            Route::post('trackingcode/{id}', 'OrderController@addTrackingCode')->name('add_tracking_code');
+            Route::post('ordercanceled/{id}', 'OrderController@orderIsCanceled')->name('order_canceled');
+            Route::put('trackingcode/{id}', 'OrderController@updateTrackingCode')->name('update_tracking_code');
+            Route::put('paymentconfirmed/{id}', 'OrderController@paymentIsConfirmed')->name('payment_confirmed');
         });
 
         //Product category

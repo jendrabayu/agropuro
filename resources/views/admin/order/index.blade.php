@@ -21,7 +21,7 @@
                 <a class="nav-link {{ request()->type == null ? 'active' : '' }}"
                   href="{{ route('admin.order.index') }}">Semua</a>
               </li>
-              @foreach ($orderStatus as $status)
+              @foreach ($order_statuses as $status)
                 <li class="nav-item">
                   <a class="nav-link {{ request()->type === $status->code ? 'active' : '' }}"
                     href="{{ route('admin.order.index', ['type' => $status->code]) }}">{{ $status->status_admin }}
