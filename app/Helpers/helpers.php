@@ -120,15 +120,6 @@ function check_main_address_customer()
     return false;
 }
 
-function get_user_id()
-{
-    if (auth()->check()) {
-        return auth()->user()->id;
-    } else {
-        return redirect(route('login'));
-    }
-}
-
 
 function get_order_status_id($code)
 {

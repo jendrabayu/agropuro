@@ -11,7 +11,7 @@
         <i class="fas fa-comment"></i></span> </a>
 
     <a href="{{ route('forum.index') }}"
-      class="{{ request()->is('forum') && is_null(request()->filter) ? 'active' : '' }} list-group-item list-group-item-action d-flex justify-content-between"><span>Semua
+      class="{{ request()->is('forum') && is_null(request()->filter) && is_null(request()->q) ? 'active' : '' }} list-group-item list-group-item-action d-flex justify-content-between"><span>Semua
         Forum</span>
       <span> <i class="fas fa-comments"></i></span>
     </a>

@@ -1,12 +1,5 @@
 @extends('forum.skeleton')
 
-@section('section_header')
-  <h1>Forum</h1>
-  <div class="section-header-breadcrumb">
-    <div class="breadcrumb-item">Forum</div>
-  </div>
-@endsection
-
 @section('content')
   <div class="row">
     <div class="col-lg-12">

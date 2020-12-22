@@ -1,15 +1,5 @@
 @extends('forum.skeleton')
 
-@section('section_header')
-  <h1>Forum</h1>
-  <div class="section-header-breadcrumb">
-    <div class="breadcrumb-item active">
-      <a href="{{ route('forum.index') }}">Forum</a>
-    </div>
-    <div class="breadcrumb-item">Edit Forum</div>
-  </div>
-@endsection
-
 @section('content')
   <div class="card">
     <div class="card-header">

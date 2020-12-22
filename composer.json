@@ -49,8 +49,7 @@
             "database/factories"
         ],
         "files": [
-            "app/Helpers/helpers.php",
-            "app/Helpers/messages.php"
+            "app/Helpers/helpers.php"
         ]
     },
     "autoload-dev": {

@@ -6,6 +6,24 @@
 @endsection
 
 
+@section('section_header')
+  <div class="d-flex justify-content-between align-items-center w-100">
+    <h1>Forum</h1>
+
+    <form action="{{ route('forum.index') }}">
+      <div class="form-group m-0">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Cari pertanyaan..." aria-label="" name="q">
+          <div class="input-group-append">
+            <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+@endsection
+
+
 @section('app')
   <div class="row">
     <div class="col-lg-3 p-2">
@@ -51,7 +69,6 @@
   <script src="{{ asset('assets/modules/select2/js/select2.full.min.js') }}"></script>
 @endpush
 
-
 @push('js')
   <script>
     $(document).ready(function() {
@@ -73,3 +90,4 @@
     });
 
   </script>
+@endpush

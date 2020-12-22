@@ -60,6 +60,12 @@ class ForumController extends Controller
       });
     }
 
+
+    if ($request->has('q')) {
+      $forums = $forums->where('title', 'LIKE', "%{$request->q}%");
+      $contentTitle = '<h4 class="text-dark">Keyword: <span class="font-weight-normal">' . Str::limit($request->q, 90) . '</span></h4>';
+    }
+
     $forums = $forums->latest()->paginate(5);
     return view('forum.index', compact('forums', 'contentTitle'));
   }
